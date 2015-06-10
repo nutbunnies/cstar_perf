@@ -89,6 +89,39 @@ def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=30
 def test_repair_profile():
     repair_profile()
 
+def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11', rows=65000000, threads=300, strategy=None):
+    config = create_baseline_config()
+    config['cluster'] = cluster
+
+    schema_options = 'replication=\(factor=3\)'
+    if strategy:
+        schema_options += ' compaction\(strategy={strategy}'.format(strategy)
+
+    config['operations'] = [
+        {'operation': 'stress',
+         'command': 'write n={rows} -rate threads={threads} -schema {schema_options}'.format(rows=rows, threads=threads,
+                                                                                             schema_options=schema_options)},
+        {'operation': 'nodetool',
+         'command': 'flush'},
+        {'operation': 'nodetool',
+         'command': 'compact'},
+        {'operation': 'stress',
+         'command': 'read n={rows} -rate threads={threads}'.format(rows=rows, threads=threads)},
+        {'operation': 'stress',
+         'command': 'read n={rows} -rate threads={threads}'.format(rows=rows, threads=threads)}]
+
+    scheduler = Scheduler(CSTAR_SERVER)
+    scheduler.schedule(config)
+
+def test_STCS_profile():
+    compaction_strategies_profile(title='STCS', strategy='SizeTieredCompactionStrategy')
+
+def test_DTCS_profile():
+    compaction_strategies_profile(title='DTCS', strategy='DateTieredCompactionStrategy')
+
+def test_LCS_profile():
+    compaction_strategies_profile(title='LCS', strategy='LeveledCompactionStrategy')
+
 def test_commitlog_sync_settings():
     yaml = '\n'.join(['commitlog_sync: batch',
                       'commitlog_sync_batch_window_in_ms: 50',
