@@ -69,7 +69,7 @@ def test_compaction_profile():
     compaction_profile()
 
 def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=300):
-    config = create_baseline_config()
+    config = create_baseline_config(title)
     config['cluster'] = cluster
     config['operations'] = [
         {'operation': 'stress',
@@ -90,7 +90,7 @@ def test_repair_profile():
     repair_profile()
 
 def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11', rows=65000000, threads=300, strategy=None):
-    config = create_baseline_config()
+    config = create_baseline_config(title)
     config['cluster'] = cluster
 
     schema_options = 'replication=\(factor=3\)'
