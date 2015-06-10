@@ -95,7 +95,7 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
 
     schema_options = 'replication=\(factor=3\)'
     if strategy:
-        schema_options += ' compaction\(strategy={strategy}'.format(strategy)
+        schema_options += ' compaction\(strategy={strategy}'.format(strategy=strategy)
 
     config['operations'] = [
         {'operation': 'stress',
