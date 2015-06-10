@@ -128,3 +128,24 @@ def test_commitlog_sync_settings():
                       'commitlog_sync_period_in_ms: null',
                       'concurrent_writes: 64'])
     test_simple_profile(title='Batch Commitlog', yaml=yaml)
+
+def number_of_columns_profile(title='Read/Write {columns}', cluster='blade_11', rows=65000000, threads=300, columns=50):
+    config = create_baseline_config(title.format(columns=columns))
+    config['cluster'] = cluster
+    config['operations'] = [
+        {'operation':'stress',
+         'command': 'write n={rows} -rate threads={threads} -col n=FIXED\({columns}\)'.format(rows=rows, threads=threads, columns=columns)},
+        {'operation':'stress',
+         'command': 'read n={rows} -rate threads={threads}'.format(rows=rows, threads=threads)},
+        {'operation':'stress',
+         'command': 'read n={rows} -rate threads={threads}'.format(rows=rows, threads=threads)}
+    ]
+
+    scheduler = Scheduler(CSTAR_SERVER)
+    scheduler.schedule(config)
+
+def test_fifty_columns_profile():
+    number_of_columns_profile(columns=50)
+
+def test_two_thousand_columns_profile():
+    number_of_columns_profile(columns=2000)
