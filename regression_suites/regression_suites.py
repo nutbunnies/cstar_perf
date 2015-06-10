@@ -124,7 +124,7 @@ def test_LCS_profile():
 
 def test_commitlog_sync_settings():
     yaml = '\n'.join(['commitlog_sync: batch',
-                      'commitlog_sync_batch_window_in_ms: 50',
+                      'commitlog_sync_batch_window_in_ms: 2',
                       'commitlog_sync_period_in_ms: null',
                       'concurrent_writes: 64'])
     test_simple_profile(title='Batch Commitlog', yaml=yaml)
