@@ -66,7 +66,7 @@ def compaction_profile(title='Compaction', cluster='blade_11', rows=65000000, th
     scheduler.schedule(config)
 
 def test_compaction_profile():
-    compaction_profile()
+    compaction_profile(rows='10M')
 
 def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=300):
     config = create_baseline_config(title)
@@ -87,7 +87,7 @@ def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=30
     scheduler.schedule(config)
 
 def test_repair_profile():
-    repair_profile()
+    repair_profile(rows='10M')
 
 def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11', rows=65000000, threads=300, strategy=None):
     config = create_baseline_config(title)
@@ -114,17 +114,21 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
     scheduler.schedule(config)
 
 def test_STCS_profile():
-    compaction_strategies_profile(title='STCS', strategy='SizeTieredCompactionStrategy')
+    compaction_strategies_profile(title='STCS', strategy='SizeTieredCompactionStrategy',
+                                  rows='10M')
 
 def test_DTCS_profile():
-    compaction_strategies_profile(title='DTCS', strategy='DateTieredCompactionStrategy')
+    compaction_strategies_profile(title='DTCS', strategy='DateTieredCompactionStrategy',
+                                  rows='10M')
 
 def test_LCS_profile():
-    compaction_strategies_profile(title='LCS', strategy='LeveledCompactionStrategy')
+    compaction_strategies_profile(title='LCS', strategy='LeveledCompactionStrategy',
+                                  rows='10M')
 
 def test_commitlog_sync_settings():
     yaml = '\n'.join(['commitlog_sync: batch',
                       'commitlog_sync_batch_window_in_ms: 2',
                       'commitlog_sync_period_in_ms: null',
                       'concurrent_writes: 64'])
-    test_simple_profile(title='Batch Commitlog', yaml=yaml)
+    test_simple_profile(title='Batch Commitlog', yaml=yaml,
+                        load_rows='10M', read_rows='10M')
