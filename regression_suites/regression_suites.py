@@ -146,6 +146,3 @@ def number_of_columns_profile(title='Read/Write {columns}', cluster='blade_11', 
 
 def test_fifty_columns_profile():
     number_of_columns_profile(columns=50)
-
-def test_two_thousand_columns_profile():
-    number_of_columns_profile(columns=2000)
