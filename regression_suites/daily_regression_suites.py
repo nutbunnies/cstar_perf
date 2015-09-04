@@ -1,13 +1,14 @@
 import datetime
 from util import get_tagged_releases
 from cstar_perf.frontend.client.schedule import Scheduler
+import requests
 
 CSTAR_SERVER = "cstar.datastax.com"
 
 def create_baseline_config(title=None):
     """Creates a config for testing the latest dev build(s) against stable and oldstable"""
 
-    dev_revisions = ['apache/trunk', 'apache/trunk@{1.week.ago}', 'apache/trunk@{2.weeks.ago}']
+    dev_revisions = ['apache/trunk']
     stable = get_tagged_releases('stable')[0]
     oldstable = get_tagged_releases('oldstable')[0]
 
