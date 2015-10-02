@@ -1,18 +1,18 @@
 import datetime
-from util import get_shas_from_builds_days_ago
+from util import get_sha_from_build_days_ago
 from cstar_perf.frontend.client.schedule import Scheduler
 # import requests
 
 
 CSTAR_SERVER = "cstar.datastax.com"
+OLD_SHAS = get_shas_from_build_days_ago(day_deltas=[7, 14], revision='apache/trunk')
 
 
 def create_baseline_config(title=None):
     """Creates a config for testing the latest dev build(s) against stable and oldstable"""
 
     dev_revisions = (['apache/trunk']
-                     + get_shas_from_builds_days_ago(day_deltas=[7, 14],
-                                                     revision='apache/trunk'))
+                     + OLD_SHAS)
 
     config = {}
 
