@@ -62,3 +62,18 @@ def get_branches():
     branches.sort(reverse=True)
 
     return ['apache/cassandra-'+b.vstring for b in branches]
+
+
+def get_shas_from_stats(stats):
+    """
+    Given a stats dictionary, such as would be returned from calling json.loads
+    on the value returned from the /stats endpoint on a cstar_perf test,
+    return a dictionary mapping from the revisions to the SHAs used for the
+    test.
+    """
+    revisions = [r for r in stats['revisions'] if
+                 ('revision' in r
+                  and 'git_id' in r
+                  and r['git_id'])]
+    return {r['revision']: list(set(r['git_id'].values()))
+            for r in revisions}

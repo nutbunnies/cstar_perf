@@ -1,24 +1,22 @@
 import datetime
-from util import get_tagged_releases
+from util import get_shas_from_builds_days_ago
 from cstar_perf.frontend.client.schedule import Scheduler
-import requests
+# import requests
+
 
 CSTAR_SERVER = "cstar.datastax.com"
+
 
 def create_baseline_config(title=None):
     """Creates a config for testing the latest dev build(s) against stable and oldstable"""
 
-    dev_revisions = ['apache/trunk']
-    stable = get_tagged_releases('stable')[0]
-    oldstable = get_tagged_releases('oldstable')[0]
+    dev_revisions = ['apache/trunk'] + get_shas_from_builds_days_ago(7, 14)
 
     config = {}
 
     config['revisions'] = revisions = []
     for r in dev_revisions:
-        revisions.append({'revision': r, 'label': r +' (dev)'})
-    revisions.append({'revision': stable, 'label': stable+' (stable)'})
-    revisions.append({'revision': oldstable, 'label': oldstable+' (oldstable)'})
+        revisions.append({'revision': r, 'label': r + ' (dev)'})
     for r in revisions:
         r['options'] = {'use_vnodes': True}
         r['java_home'] = "~/fab/jvms/jdk1.7.0_71" if 'oldstable' in r['label'] else "~/fab/jvms/jdk1.8.0_45"
@@ -30,16 +28,17 @@ def create_baseline_config(title=None):
 
     return config
 
+
 def test_simple_profile(title='Read/Write', cluster='blade_11', load_rows=65000000, read_rows=65000000, threads=300, yaml=None):
     """Test the basic stress profile with default C* settings"""
     config = create_baseline_config(title)
     config['cluster'] = cluster
     config['operations'] = [
-        {'operation':'stress',
+        {'operation': 'stress',
          'command': 'write n={load_rows} -rate threads={threads}'.format(**locals())},
-        {'operation':'stress',
+        {'operation': 'stress',
          'command': 'read n={read_rows} -rate threads={threads}'.format(**locals())},
-        {'operation':'stress',
+        {'operation': 'stress',
          'command': 'read n={read_rows} -rate threads={threads}'.format(**locals())}
     ]
     if yaml:
@@ -47,6 +46,7 @@ def test_simple_profile(title='Read/Write', cluster='blade_11', load_rows=650000
 
     scheduler = Scheduler(CSTAR_SERVER)
     scheduler.schedule(config)
+
 
 def compaction_profile(title='Compaction', cluster='blade_11', rows=65000000, threads=300):
     config = create_baseline_config(title)
@@ -66,8 +66,10 @@ def compaction_profile(title='Compaction', cluster='blade_11', rows=65000000, th
     scheduler = Scheduler(CSTAR_SERVER)
     scheduler.schedule(config)
 
+
 def test_compaction_profile():
     compaction_profile(rows='10M')
+
 
 def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=300):
     config = create_baseline_config(title)
@@ -87,8 +89,10 @@ def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=30
     scheduler = Scheduler(CSTAR_SERVER)
     scheduler.schedule(config)
 
+
 def test_repair_profile():
     repair_profile(rows='10M')
+
 
 def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11', rows=65000000, threads=300, strategy=None):
     config = create_baseline_config(title)
@@ -114,17 +118,21 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
     scheduler = Scheduler(CSTAR_SERVER)
     scheduler.schedule(config)
 
+
 def test_STCS_profile():
     compaction_strategies_profile(title='STCS', strategy='SizeTieredCompactionStrategy',
                                   rows='10M')
+
 
 def test_DTCS_profile():
     compaction_strategies_profile(title='DTCS', strategy='DateTieredCompactionStrategy',
                                   rows='10M')
 
+
 def test_LCS_profile():
     compaction_strategies_profile(title='LCS', strategy='LeveledCompactionStrategy',
                                   rows='10M')
+
 
 def test_commitlog_sync_settings():
     yaml = '\n'.join(['commitlog_sync: batch',
