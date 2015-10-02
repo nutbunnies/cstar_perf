@@ -10,7 +10,9 @@ CSTAR_SERVER = "cstar.datastax.com"
 def create_baseline_config(title=None):
     """Creates a config for testing the latest dev build(s) against stable and oldstable"""
 
-    dev_revisions = ['apache/trunk'] + get_shas_from_builds_days_ago(7, 14)
+    dev_revisions = (['apache/trunk']
+                     + get_shas_from_builds_days_ago(day_deltas=[7, 14],
+                                                     revision='apache/trunk'))
 
     config = {}
 
@@ -19,7 +21,9 @@ def create_baseline_config(title=None):
         revisions.append({'revision': r, 'label': r + ' (dev)'})
     for r in revisions:
         r['options'] = {'use_vnodes': True}
-        r['java_home'] = "~/fab/jvms/jdk1.7.0_71" if 'oldstable' in r['label'] else "~/fab/jvms/jdk1.8.0_45"
+        r['java_home'] = ("~/fab/jvms/jdk1.7.0_71"
+                          if 'oldstable' in r['label']
+                          else "~/fab/jvms/jdk1.8.0_45")
 
     config['title'] = 'Daily C* regression suite - {}'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
 
