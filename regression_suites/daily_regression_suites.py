@@ -5,7 +5,7 @@ from cstar_perf.frontend.client.schedule import Scheduler
 
 
 CSTAR_SERVER = "cstar.datastax.com"
-OLD_SHAS = get_sha_from_build_days_ago(day_deltas=[7, 14], revision='apache/trunk')
+OLD_SHAS = get_sha_from_build_days_ago(CSTAR_SERVER, day_deltas=[7, 14], revision='apache/trunk')
 
 
 def create_baseline_config(title=None):
