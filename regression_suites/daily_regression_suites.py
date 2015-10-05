@@ -21,7 +21,8 @@ def create_baseline_config(title=None):
 
     config['revisions'] = []
     for days_ago, revision in sorted(dev_revisions.items()):
-        label = REVISION if days_ago == 0 else '{REVISION} ~{days_ago} days ago'.format(REVISION=REVISION)
+        label = REVISION if days_ago == 0 else '{REVISION} ~{days_ago} days ago'.format(REVISION=REVISION,
+                                                                                        days_ago=days_ago)
         config['revisions'].append({'revision': revision, 'label': label})
     for r in config['revisions']:
         r['options'] = {'use_vnodes': True}
