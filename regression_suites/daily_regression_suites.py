@@ -109,7 +109,7 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
 
     schema_options = 'replication\(factor=3\)'
     if strategy:
-        schema_options += ' compaction\(strategy={strategy}'.format(strategy=strategy)
+        schema_options += ' compaction\(strategy={strategy}\)'.format(strategy=strategy)
 
     config['operations'] = [
         {'operation': 'stress',
@@ -130,17 +130,17 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
 
 
 def test_STCS_profile():
-    compaction_strategies_profile(title='STCS', strategy='SizeTieredCompactionStrategy',
+    compaction_strategies_profile(title='STCS', strategy='org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy',
                                   rows='10M')
 
 
 def test_DTCS_profile():
-    compaction_strategies_profile(title='DTCS', strategy='DateTieredCompactionStrategy',
+    compaction_strategies_profile(title='DTCS', strategy='org.apache.cassandra.db.compaction.DateTieredCompactionStrategy',
                                   rows='10M')
 
 
 def test_LCS_profile():
-    compaction_strategies_profile(title='LCS', strategy='LeveledCompactionStrategy',
+    compaction_strategies_profile(title='LCS', strategy='org.apache.cassandra.db.compaction.LeveledCompactionStrategy',
                                   rows='10M')
 
 
