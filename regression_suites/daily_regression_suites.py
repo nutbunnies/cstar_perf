@@ -3,25 +3,27 @@ from util import get_sha_from_build_days_ago
 from cstar_perf.frontend.client.schedule import Scheduler
 # import requests
 
-
+REVISION = 'apache/trunk'
 CSTAR_SERVER = "cstar.datastax.com"
-OLD_SHAS = get_sha_from_build_days_ago('http://' + CSTAR_SERVER,
-                                       day_deltas=[7, 14],
-                                       revision='apache/trunk')
+day_deltas = [7, 14]
+OLD_SHAS = dict(zip(day_deltas,
+                    get_sha_from_build_days_ago('http://' + CSTAR_SERVER,
+                                                day_deltas=day_deltas,
+                                                revision=REVISION)))
 
 
 def create_baseline_config(title=None):
     """Creates a config for testing the latest dev build(s) against stable and oldstable"""
 
-    dev_revisions = (['apache/trunk']
-                     + OLD_SHAS)
+    dev_revisions = dict({0: REVISION}, **OLD_SHAS)
 
     config = {}
 
-    config['revisions'] = revisions = []
-    for r in dev_revisions:
-        revisions.append({'revision': r, 'label': r + ' (dev)'})
-    for r in revisions:
+    config['revisions'] = []
+    for days_ago, revision in sorted(dev_revisions.items()):
+        label = REVISION if days_ago == 0 else '{REVISION} ~{days_ago} days ago'.format(REVISION=REVISION)
+        config['revisions'].append({'revision': revision, 'label': label})
+    for r in config['revisions']:
         r['options'] = {'use_vnodes': True}
         r['java_home'] = ("~/fab/jvms/jdk1.7.0_71"
                           if 'oldstable' in r['label']
@@ -104,14 +106,15 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11
     config = create_baseline_config(title)
     config['cluster'] = cluster
 
-    schema_options = 'replication=\(factor=3\)'
+    schema_options = 'replication\(factor=3\)'
     if strategy:
         schema_options += ' compaction\(strategy={strategy}'.format(strategy=strategy)
 
     config['operations'] = [
         {'operation': 'stress',
-         'command': 'write n={rows} -rate threads={threads} -schema {schema_options}'.format(rows=rows, threads=threads,
-                                                                                             schema_options=schema_options)},
+         'command': 'write n={rows} -rate threads={threads} '
+                    '-schema {schema_options}'.format(rows=rows, threads=threads,
+                                                      schema_options=schema_options)},
         {'operation': 'nodetool',
          'command': 'flush'},
         {'operation': 'nodetool',
