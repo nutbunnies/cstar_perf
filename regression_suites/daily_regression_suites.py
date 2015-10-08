@@ -10,6 +10,7 @@ OLD_SHAS = dict(zip(day_deltas,
                     get_sha_from_build_days_ago('http://' + CSTAR_SERVER,
                                                 day_deltas=day_deltas,
                                                 revision=REVISION)))
+DEFAULT_CLUSTER_NAME = 'blade_11_b'
 
 
 def create_baseline_config(title=None):
@@ -38,7 +39,7 @@ def create_baseline_config(title=None):
     return config
 
 
-def test_simple_profile(title='Read/Write', cluster='blade_11', load_rows=65000000, read_rows=65000000, threads=300, yaml=None):
+def test_simple_profile(title='Read/Write', cluster=DEFAULT_CLUSTER_NAME, load_rows=65000000, read_rows=65000000, threads=300, yaml=None):
     """Test the basic stress profile with default C* settings"""
     config = create_baseline_config(title)
     config['cluster'] = cluster
@@ -57,7 +58,7 @@ def test_simple_profile(title='Read/Write', cluster='blade_11', load_rows=650000
     scheduler.schedule(config)
 
 
-def compaction_profile(title='Compaction', cluster='blade_11', rows=65000000, threads=300):
+def compaction_profile(title='Compaction', cluster=DEFAULT_CLUSTER_NAME, rows=65000000, threads=300):
     config = create_baseline_config(title)
     config['cluster'] = cluster
     config['operations'] = [
@@ -80,7 +81,7 @@ def test_compaction_profile():
     compaction_profile(rows='10M')
 
 
-def repair_profile(title='Repair', cluster='blade_11', rows=65000000, threads=300):
+def repair_profile(title='Repair', cluster=DEFAULT_CLUSTER_NAME, rows=65000000, threads=300):
     config = create_baseline_config(title)
     config['cluster'] = cluster
     config['operations'] = [
@@ -103,7 +104,7 @@ def test_repair_profile():
     repair_profile(rows='10M')
 
 
-def compaction_strategies_profile(title='Compaction Strategy', cluster='blade_11', rows=65000000, threads=300, strategy=None):
+def compaction_strategies_profile(title='Compaction Strategy', cluster=DEFAULT_CLUSTER_NAME, rows=65000000, threads=300, strategy=None):
     config = create_baseline_config(title)
     config['cluster'] = cluster
 
