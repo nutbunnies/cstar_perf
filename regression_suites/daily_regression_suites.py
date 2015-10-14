@@ -33,6 +33,7 @@ def create_baseline_config(title=None):
         r['testseries'] = 'daily_regressions_trunk'
 
     config['title'] = 'Daily C* regression suite - {}'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
+    config['product'] = 'cassandra'
 
     if title is not None:
         config['title'] += ' - {title}'.format(title=title)
