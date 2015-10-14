@@ -30,6 +30,7 @@ def create_baseline_config(title=None):
         r['java_home'] = ("~/fab/jvms/jdk1.7.0_71"
                           if 'oldstable' in r['label']
                           else "~/fab/jvms/jdk1.8.0_45")
+        r['testseries'] = 'daily_regressions_trunk'
 
     config['title'] = 'Daily C* regression suite - {}'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
 

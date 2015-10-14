@@ -11,6 +11,10 @@ import requests
 GITHUB_TAGS = "https://api.github.com/repos/apache/cassandra/git/refs/tags"
 GITHUB_BRANCHES = "https://api.github.com/repos/apache/cassandra/branches"
 
+# highest and lowest UUIDs, as sorted by C*; va pycassa source
+LOWEST_TIME_UUID = UUID('00000000-0000-1000-8080-808080808080')
+HIGHEST_TIME_UUID = UUID('ffffffff-ffff-1fff-bf7f-7f7f7f7f7f7f')
+
 
 def get_tagged_releases(series='stable'):
     """Retrieve git tags and find version numbers for a release series
@@ -108,17 +112,30 @@ def uuid_absolute_distance_from_datetime(ref_dt):
     return absolute_distance_from_ref_datetime
 
 
-def get_cstar_jobs_uuids():
+def get_cstar_jobs_uuids(cstar_server, series=None):
     # someday, this will make a call to cstar_perf. that day is not today.
     uuids_file = os.path.join(os.getcwd(), os.path.dirname(__file__), 'all-uuids.txt')
     with open(uuids_file) as f:
         uuids = list(line.strip() for line in f.readlines())
+    if series:
+        series_url = '/'.join([cstar_server, 'api', 'series', series,
+                               str(LOWEST_TIME_UUID), str(HIGHEST_TIME_UUID)])
+        series_uuids = None
+        try:
+            series_uuids = requests.get(series_url)
+        except requests.exceptions.ConnectionError as e:
+            print "Can't get series uuids: {}".format(e)
+
+        if series_uuids:
+            uuids += series_uuids
+
     return uuids
 
 
-def get_sha_from_build_days_ago(cstar_server, day_deltas, revision):
+def get_sha_from_build_days_ago(cstar_server, day_deltas, revision, series=None):
     print 'getting sha from {}'.format(revision)
-    test_uuids = [UUID(i) for i in get_cstar_jobs_uuids()]
+    test_uuids = [UUID(i) for i in
+                  get_cstar_jobs_uuids(cstar_server=cstar_server, series=series)]
 
     closest_shas = []
 
