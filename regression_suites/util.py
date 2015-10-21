@@ -6,6 +6,7 @@ import datetime
 import os
 import requests
 import time
+from uuid import UUID
 
 
 GITHUB_TAGS = "https://api.github.com/repos/apache/cassandra/git/refs/tags"
@@ -143,6 +144,7 @@ def get_sha_from_build_days_ago(cstar_server, day_deltas, revision):
         uuids_from_series = get_cstar_jobs_uuids(cstar_server=cstar_server, series=series)
         if uuids_from_series:
             test_uuids.extend(uuids_from_series)
+    test_uuids = list(map(UUID, test_uuids))
 
     closest_shas = []
 
