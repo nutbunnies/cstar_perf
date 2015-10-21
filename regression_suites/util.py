@@ -132,7 +132,7 @@ def get_cstar_jobs_uuids(cstar_server, series=None):
             print "Can't get series uuids: {}".format(e)
 
         print series
-        print series_uuids
+        print series_uuids.text
         uuids = series_uuids
 
     return uuids
