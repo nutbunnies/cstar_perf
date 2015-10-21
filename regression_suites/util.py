@@ -130,8 +130,7 @@ def get_cstar_jobs_uuids(cstar_server, series=None):
         except requests.exceptions.ConnectionError as e:
             print "Can't get series uuids: {}".format(e)
 
-        if series_uuids:
-            uuids += series_uuids
+        uuids = series_uuids
 
     return uuids
 
