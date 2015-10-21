@@ -131,6 +131,8 @@ def get_cstar_jobs_uuids(cstar_server, series=None):
         except requests.exceptions.ConnectionError as e:
             print "Can't get series uuids: {}".format(e)
 
+        print series
+        print series_uuids
         uuids = series_uuids
 
     return uuids
@@ -144,7 +146,6 @@ def get_sha_from_build_days_ago(cstar_server, day_deltas, revision):
         uuids_from_series = get_cstar_jobs_uuids(cstar_server=cstar_server, series=series)
         if uuids_from_series:
             test_uuids.extend(uuids_from_series)
-    print test_uuids
     test_uuids = list(map(UUID, ['{' + u + '}' for u in test_uuids]))
 
     closest_shas = []
