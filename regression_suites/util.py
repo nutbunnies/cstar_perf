@@ -145,7 +145,7 @@ def get_sha_from_build_days_ago(cstar_server, day_deltas, revision):
         if uuids_from_series:
             test_uuids.extend(uuids_from_series)
     print test_uuids
-    test_uuids = list(map(UUID, test_uuids))
+    test_uuids = list(map(UUID, ['{' + u + '}' for u in test_uuids]))
 
     closest_shas = []
 
