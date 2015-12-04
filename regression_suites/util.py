@@ -156,7 +156,8 @@ def get_sha_from_build_days_ago(cstar_server, day_deltas, revision):
 
         for test_id in test_ids_by_distance_asc[:30]:
             print 'trying {}'.format(test_id)
-            stats_url = '/'.join([cstar_server, 'tests', 'artifacts', str(test_id), 'stats'])
+            stats_url = '/'.join(
+                [cstar_server, 'tests', 'artifacts', str(test_id), 'stats', 'stats.{}.json'.format(str(test_id))])
             try:
                 stats_json = requests.get(stats_url).text
             except requests.exceptions.ConnectionError as e:
