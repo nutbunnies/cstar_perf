@@ -146,6 +146,8 @@ def compaction_strategies_profile(title='Compaction Strategy', cluster=DEFAULT_C
         {'operation': 'nodetool',
          'command': 'flush'},
         {'operation': 'nodetool',
+         'command': 'repair'},
+        {'operation': 'nodetool',
          'command': 'compact'},
         {'operation': 'stress',
          'stress_revision': 'apache/trunk',
